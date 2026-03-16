@@ -1,50 +1,79 @@
-<!DOCTYPE html>
-<html>
-<head>
-<title>Fintech Dashboard</title>
-<link rel="stylesheet" href="style.css">
-</head>
+body{
+font-family:Arial;
+margin:0;
+background:#f4f7fb;
+}
 
-<body>
+.dashboard{
+display:flex;
+height:100vh;
+}
 
-<div class="dashboard">
+.sidebar{
+width:220px;
+background:#1f2937;
+color:white;
+padding:20px;
+}
 
-<div class="sidebar">
-<h2>Fintech</h2>
-<ul>
-<li>Dashboard</li>
-<li>Transactions</li>
-<li>Analytics</li>
-<li>Settings</li>
-</ul>
-</div>
+.sidebar ul{
+list-style:none;
+padding:0;
+}
 
-<div class="main">
+.sidebar li{
+margin:15px 0;
+cursor:pointer;
+}
 
-<h1>Dashboard Overview</h1>
+.main{
+flex:1;
+padding:30px;
+}
 
-<div class="cards">
+.cards{
+display:flex;
+gap:20px;
+margin-top:20px;
+}
 
-<div class="card">
-<h3>Balance</h3>
-<p>$8,420</p>
-</div>
+.card{
+background:white;
+padding:20px;
+border-radius:10px;
+box-shadow:0 5px 15px rgba(0,0,0,0.1);
+flex:1;
+}
 
-<div class="card">
-<h3>Revenue</h3>
-<p>$3,120</p>
-</div>
+.card h3{
+margin-bottom:10px;
+}
 
-<div class="card">
-<h3>Users</h3>
-<p>1,240</p>
-</div>
+.table-title{
+margin-top:40px;
+}
 
-</div>
+table{
+width:100%;
+margin-top:15px;
+border-collapse:collapse;
+background:white;
+border-radius:10px;
+overflow:hidden;
+}
 
-</div>
+th, td{
+padding:15px;
+text-align:left;
+border-bottom:1px solid #eee;
+}
 
-</div>
+.success{
+color:green;
+font-weight:bold;
+}
 
-</body>
-</html>
+.pending{
+color:orange;
+font-weight:bold;
+}
