@@ -1,7 +1,3 @@
-/* =========================================================
-   FINTECH DASHBOARD — COMPLETE V1 LOGIC
-   ========================================================= */
-
 const STORAGE_KEY = "fintechDashboardStateV2";
 
 const DEFAULT_STATE = {
@@ -85,12 +81,6 @@ function loadState() {
         }
 
         const parsed = JSON.parse(saved);
-
-        /*
-         * The previous version contained demonstration data.
-         * If the saved data is from that version, start the user
-         * with a completely clean financial account instead.
-         */
         if (
             parsed.setupComplete !== true &&
             !parsed.startingBalance &&
@@ -741,20 +731,6 @@ function updateFinancialSummary() {
                     sum + Number(t.amount || 0),
                 0
             );
-
-    /*
-     * Available balance and savings are separate buckets.
-     *
-     * Available balance:
-     * starting balance
-     * + income
-     * - expenses
-     * - money moved into savings
-     *
-     * Savings:
-     * starting savings
-     * + savings contributions
-     */
 
     const availableBalance =
         Number(state.startingBalance || 0)
@@ -1653,91 +1629,6 @@ function renderSavings() {
     }).join("");
 }
 
-function setupFinancialSetup() {
-    getElement("financialSetupForm")?.addEventListener("submit", event => {
-        event.preventDefault();
-
-        const data = new FormData(event.currentTarget);
-
-        const startingBalance = Number(
-            data.get("startingBalance")
-        );
-
-        const startingSavings = Number(
-            data.get("startingSavings")
-        );
-
-        const monthlyIncome = Number(
-            data.get("monthlyIncome") || 0
-        );
-
-        const name = String(
-            data.get("setupName") || ""
-        ).trim();
-
-        const email = String(
-            data.get("setupEmail") || ""
-        ).trim();
-
-        const incomeFrequency = String(
-            data.get("incomeFrequency") || "Monthly"
-        );
-
-        if (!Number.isFinite(startingBalance) || startingBalance < 0) {
-            showToast(
-                "Enter a valid current balance.",
-                "error"
-            );
-            return;
-        }
-
-        if (!Number.isFinite(startingSavings) || startingSavings < 0) {
-            showToast(
-                "Enter a valid current savings amount.",
-                "error"
-            );
-            return;
-        }
-
-        if (!Number.isFinite(monthlyIncome) || monthlyIncome < 0) {
-            showToast(
-                "Enter a valid monthly income amount.",
-                "error"
-            );
-            return;
-        }
-
-        if (startingSavings > startingBalance) {
-            showToast(
-                "Current savings cannot be greater than your current balance.",
-                "error"
-            );
-            return;
-        }
-
-        state.startingBalance =
-            startingBalance - startingSavings;
-
-        state.startingSavings = startingSavings;
-        state.monthlyIncome = monthlyIncome;
-        state.incomeFrequency = incomeFrequency;
-
-        state.profile.name = name;
-        state.profile.email = email;
-
-        state.setupComplete = true;
-
-        saveState();
-        closeModal("financialSetupModal");
-        renderEverything();
-
-        showToast(
-            "Your real financial starting point has been saved.",
-            "success"
-        );
-    });
-}
-
 function setupSettings() {
     getElement("profileForm")?.addEventListener("submit", event => {
         event.preventDefault();
@@ -2132,27 +2023,110 @@ function setTodayAsDefaultDate() {
     }
 }
 
-function updateCurrentDate() {
+function getTimeGreeting(hour = new Date().getHours()) {
+if (hour < 12) {
+return "Good morning";
+}
 
+if (hour < 17) {
+    return "Good afternoon";
+}
+return "Good evening";
+
+}
+
+function updateGreeting(now = new Date()) {
+const greeting =
+getTimeGreeting(now.getHours());
+
+const greetingPattern =
+    /Good\s+(?:morning|afternoon|evening|night)\b/i;
+const walker =
+    document.createTreeWalker(
+        document.body,
+        NodeFilter.SHOW_TEXT
+    );
+
+const textNodes = [];
+
+while (walker.nextNode()) {
+    textNodes.push(
+        walker.currentNode
+    );
+}
+
+textNodes.forEach(textNode => {
+    const parent =
+        textNode.parentElement;
+
+    if (!parent) return;
+
+    if (
+        parent.closest(
+            "script, style, noscript"
+        )
+    ) {
+        return;
+    }
+
+    const text =
+        textNode.nodeValue || "";
+
+    if (greetingPattern.test(text)) {
+        textNode.nodeValue =
+            text.replace(
+                greetingPattern,
+                greeting
+            );
+    }
+});
+[
+    "greeting",
+    "greetingText",
+    "welcomeGreeting",
+    "welcomeMessage"
+].forEach(id => {
     const element =
-        getElement("currentDate");
+        getElement(id);
 
     if (!element) return;
 
-    const now = new Date();
+    const text =
+        element.textContent || "";
 
     element.textContent =
-        new Intl.DateTimeFormat(
-            undefined,
-            {
-                weekday: "long",
-                month: "long",
-                day: "numeric",
-                year: "numeric",
-                hour: "numeric",
-                minute: "2-digit"
-            }
-        ).format(now);
+        greetingPattern.test(text)
+            ? text.replace(
+                greetingPattern,
+                greeting
+            )
+            : greeting;
+});
+
+}
+
+function updateCurrentDate() {
+const element =
+getElement("currentDate");
+const now =
+    new Date();
+updateGreeting(now);
+
+if (!element) return;
+
+element.textContent =
+    new Intl.DateTimeFormat(
+        undefined,
+        {
+            weekday: "long",
+            month: "long",
+            day: "numeric",
+            year: "numeric",
+            hour: "numeric",
+            minute: "2-digit"
+        }
+    ).format(now);
+
 }
 
 function formatCurrency(amount, compact = false) {
