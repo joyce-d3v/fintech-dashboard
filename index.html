@@ -1,87 +1,800 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-
-<title>Fintech Dashboard</title>
-<link rel="stylesheet" href="style.css">
-
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="A modern personal finance dashboard for tracking money, budgets, savings and spending.">
+    <title>Fintech Dashboard</title>
+    <link rel="stylesheet" href="style.css">
 </head>
-
 <body>
+<div class="app">
 
-<div class="dashboard">
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <button class="brand" id="brandButton" type="button" aria-label="Go to dashboard">
+                <span class="brand-icon">F</span>
+                <span class="brand-name">Fintech</span>
+            </button>
+            <button class="sidebar-close" id="sidebarClose" type="button" aria-label="Close navigation">×</button>
+        </div>
 
-<div class="sidebar">
-<h2>Fintech</h2>
+        <nav class="navigation" aria-label="Main navigation">
+            <p class="nav-label">Overview</p>
+            <button class="nav-item active" data-page="dashboard" type="button"><span class="nav-icon">⌂</span><span>Dashboard</span></button>
+            <button class="nav-item" data-page="transactions" type="button"><span class="nav-icon">↔</span><span>Transactions</span></button>
+            <button class="nav-item" data-page="analytics" type="button"><span class="nav-icon">◒</span><span>Analytics</span></button>
 
-<ul>
-<li>Dashboard</li>
-<li>Transactions</li>
-<li>Analytics</li>
-<li>Settings</li>
-</ul>
+            <p class="nav-label">Management</p>
+            <button class="nav-item" data-page="budgets" type="button"><span class="nav-icon">▣</span><span>Budgets</span></button>
+            <button class="nav-item" data-page="savings" type="button"><span class="nav-icon">◇</span><span>Savings</span></button>
 
+            <p class="nav-label">System</p>
+            <button class="nav-item" data-page="settings" type="button"><span class="nav-icon">⚙</span><span>Settings</span></button>
+        </nav>
+
+        <div class="sidebar-footer">
+            <div class="user-card">
+                <div class="user-avatar" id="sidebarAvatar">YN</div>
+                <div class="user-info">
+                    <strong id="sidebarUserName">Your Name</strong>
+                    <span id="sidebarUserType">Personal Account</span>
+                </div>
+                <button class="user-menu" id="userMenuButton" type="button" aria-label="Open profile menu">⋮</button>
+            </div>
+        </div>
+    </aside>
+
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+    <main class="main-content">
+        <header class="topbar">
+            <div class="topbar-left">
+                <button class="menu-button" id="menuButton" type="button" aria-label="Open navigation">☰</button>
+                <div class="page-heading">
+                    <span class="eyebrow" id="pageEyebrow">Financial overview</span>
+                    <h1 id="pageTitle">Dashboard</h1>
+                </div>
+            </div>
+
+            <div class="topbar-actions">
+                <button class="icon-button notification-button" id="notificationButton" type="button" aria-label="Open notifications">
+                    ♢
+                    <span class="notification-dot hidden" id="notificationDot"></span>
+                </button>
+
+                <button class="topbar-user" id="topbarUserButton" type="button" aria-label="Open profile">
+                    <div class="user-avatar small" id="topbarAvatar">YN</div>
+                    <div class="topbar-user-info">
+                        <strong id="topbarUserName">Your Name</strong>
+                        <span>Personal</span>
+                    </div>
+                </button>
+            </div>
+        </header>
+
+        <div class="content">
+
+            <section class="page-section active" id="page-dashboard" data-page-section="dashboard">
+                <section class="welcome-section">
+                    <div>
+                        <p class="date-label" id="currentDate"></p>
+                        <h2>Good afternoon, <span id="welcomeName">there</span>.</h2>
+                        <p>Your dashboard is based on the money and activity you enter.</p>
+                    </div>
+                    <button class="primary-button" id="dashboardAddButton" type="button"><span>+</span> Add transaction</button>
+                </section>
+
+                <section class="summary-grid" aria-label="Financial summary">
+                    <article class="summary-card balance-card">
+                        <div class="card-top"><span class="card-label">Available balance</span><span class="card-icon balance-icon">$</span></div>
+                        <div class="card-value"><strong id="totalBalance">$0.00</strong></div>
+                        <div class="card-footer"><span class="trend" id="balanceTrend">Current</span><span>available to spend</span></div>
+                    </article>
+
+                    <article class="summary-card">
+                        <div class="card-top"><span class="card-label">Total income</span><span class="card-icon income-icon">↑</span></div>
+                        <div class="card-value"><strong id="totalIncome">$0.00</strong></div>
+                        <div class="card-footer"><span class="trend positive">Income</span><span>all recorded income</span></div>
+                    </article>
+
+                    <article class="summary-card">
+                        <div class="card-top"><span class="card-label">Total expenses</span><span class="card-icon expense-icon">↓</span></div>
+                        <div class="card-value"><strong id="totalExpenses">$0.00</strong></div>
+                        <div class="card-footer"><span class="trend negative">Spending</span><span>all recorded expenses</span></div>
+                    </article>
+
+                    <article class="summary-card">
+                        <div class="card-top"><span class="card-label">Current savings</span><span class="card-icon savings-icon">◇</span></div>
+                        <div class="card-value"><strong id="totalSavings">$0.00</strong></div>
+                        <div class="card-footer"><span class="trend positive" id="savingsRate">0%</span><span>of income retained</span></div>
+                    </article>
+                </section>
+
+                <section class="dashboard-grid">
+                    <article class="panel spending-panel">
+                        <div class="panel-header">
+                            <div><p class="panel-label">Overview</p><h3>Spending activity</h3></div>
+                            <select class="select-control" id="chartPeriod" aria-label="Chart period">
+                                <option value="7">Last 7 days</option>
+                                <option value="30" selected>Last 30 days</option>
+                                <option value="90">Last 3 months</option>
+                                <option value="365">This year</option>
+                            </select>
+                        </div>
+                        <div class="chart-container"><canvas id="spendingChart"></canvas><div class="empty-chart" id="chartEmpty">Add expenses to see your spending breakdown.</div></div>
+                    </article>
+
+                    <article class="panel">
+                        <div class="panel-header">
+                            <div><p class="panel-label">Planning</p><h3>Budget overview</h3></div>
+                            <button class="text-button" data-go-page="budgets" type="button">View all</button>
+                        </div>
+                        <div class="budget-list" id="dashboardBudgets"></div>
+                    </article>
+                </section>
+
+                <section class="panel transactions-panel">
+                    <div class="panel-header transactions-header">
+                        <div><p class="panel-label">Activity</p><h3>Recent transactions</h3></div>
+                        <div class="transaction-controls">
+                            <input type="search" id="dashboardSearch" class="transaction-search" placeholder="Search..." aria-label="Search recent transactions">
+                            <button class="text-button" data-go-page="transactions" type="button">View all</button>
+                        </div>
+                    </div>
+
+                    <div class="table-wrapper">
+                        <table class="transactions-table">
+                            <thead>
+                                <tr>
+                                    <th>Transaction</th>
+                                    <th>Category</th>
+                                    <th>Date</th>
+                                    <th>Status</th>
+                                    <th class="amount-column">Amount</th>
+                                </tr>
+                            </thead>
+                            <tbody id="dashboardTransactionList"></tbody>
+                        </table>
+                    </div>
+                </section>
+
+                <section class="insight-grid">
+                    <article class="insight-card">
+                        <span class="insight-icon">↗</span>
+                        <div>
+                            <p class="panel-label">Top spending category</p>
+                            <strong id="topCategory">No spending yet</strong>
+                            <span id="topCategoryAmount">$0.00</span>
+                        </div>
+                    </article>
+
+                    <article class="insight-card">
+                        <span class="insight-icon">✓</span>
+                        <div>
+                            <p class="panel-label">Financial health</p>
+                            <strong id="healthScore">No score yet</strong>
+                            <span id="healthText">Add income and expenses to calculate it.</span>
+                        </div>
+                    </article>
+
+                    <article class="insight-card">
+                        <span class="insight-icon">◎</span>
+                        <div>
+                            <p class="panel-label">Upcoming attention</p>
+                            <strong id="attentionTitle">You're all caught up</strong>
+                            <span id="attentionText">No urgent budget alerts.</span>
+                        </div>
+                    </article>
+                </section>
+            </section>
+
+            <section class="page-section" id="page-transactions" data-page-section="transactions">
+                <div class="section-heading">
+                    <div>
+                        <p class="eyebrow">Money movement</p>
+                        <h2>Transactions</h2>
+                        <p>Search, filter, edit and remove your financial activity.</p>
+                    </div>
+                    <button class="primary-button" id="transactionsAddButton" type="button"><span>+</span> Add transaction</button>
+                </div>
+
+                <article class="panel">
+                    <div class="filter-bar">
+                        <input type="search" id="transactionSearch" class="transaction-search wide" placeholder="Search name, category or description..." aria-label="Search transactions">
+                        <select id="transactionTypeFilter" class="select-control">
+                            <option value="all">All types</option>
+                            <option value="income">Income</option>
+                            <option value="expense">Expenses</option>
+                        </select>
+                        <select id="transactionCategoryFilter" class="select-control">
+                            <option value="all">All categories</option>
+                        </select>
+                        <select id="transactionSort" class="select-control">
+                            <option value="newest">Newest first</option>
+                            <option value="oldest">Oldest first</option>
+                            <option value="high">Highest amount</option>
+                            <option value="low">Lowest amount</option>
+                        </select>
+                    </div>
+
+                    <div class="table-wrapper">
+                        <table class="transactions-table full-table">
+                            <thead>
+                                <tr>
+                                    <th>Transaction</th>
+                                    <th>Category</th>
+                                    <th>Date</th>
+                                    <th>Status</th>
+                                    <th class="amount-column">Amount</th>
+                                    <th class="action-column">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="allTransactionList"></tbody>
+                        </table>
+                    </div>
+                </article>
+            </section>
+
+            <section class="page-section" id="page-analytics" data-page-section="analytics">
+                <div class="section-heading">
+                    <div>
+                        <p class="eyebrow">Insights</p>
+                        <h2>Analytics</h2>
+                        <p>Understand where your money goes and how your habits are changing.</p>
+                    </div>
+                </div>
+
+                <section class="analytics-stats">
+                    <article class="stat-card"><span>Average expense</span><strong id="averageExpense">$0.00</strong></article>
+                    <article class="stat-card"><span>Largest expense</span><strong id="largestExpense">$0.00</strong></article>
+                    <article class="stat-card"><span>Savings rate</span><strong id="analyticsSavingsRate">0%</strong></article>
+                    <article class="stat-card"><span>Transactions</span><strong id="transactionCount">0</strong></article>
+                </section>
+
+                <section class="analytics-grid">
+                    <article class="panel">
+                        <div class="panel-header">
+                            <div><p class="panel-label">Breakdown</p><h3>Spending by category</h3></div>
+                        </div>
+                        <div class="chart-container analytics-chart">
+                            <canvas id="categoryChart"></canvas>
+                            <div class="empty-chart" id="categoryEmpty">No expense data yet.</div>
+                        </div>
+                    </article>
+
+                    <article class="panel">
+                        <div class="panel-header">
+                            <div><p class="panel-label">Cash flow</p><h3>Income vs expenses</h3></div>
+                        </div>
+                        <div class="chart-container analytics-chart">
+                            <canvas id="cashFlowChart"></canvas>
+                            <div class="empty-chart" id="cashFlowEmpty">Add transactions to see cash flow.</div>
+                        </div>
+                    </article>
+                </section>
+            </section>
+
+            <section class="page-section" id="page-budgets" data-page-section="budgets">
+                <div class="section-heading">
+                    <div>
+                        <p class="eyebrow">Planning</p>
+                        <h2>Budgets</h2>
+                        <p>Set spending limits and keep an eye on categories before they get away from you.</p>
+                    </div>
+                    <button class="primary-button" id="addBudgetButton" type="button"><span>+</span> New budget</button>
+                </div>
+
+                <section class="budget-summary-cards">
+                    <article class="stat-card"><span>Total budgeted</span><strong id="totalBudgeted">$0.00</strong></article>
+                    <article class="stat-card"><span>Total spent</span><strong id="totalBudgetSpent">$0.00</strong></article>
+                    <article class="stat-card"><span>Remaining</span><strong id="budgetRemaining">$0.00</strong></article>
+                    <article class="stat-card"><span>At risk</span><strong id="budgetsAtRisk">0</strong></article>
+                </section>
+
+                <div class="cards-grid" id="budgetCards"></div>
+            </section>
+
+            <section class="page-section" id="page-savings" data-page-section="savings">
+                <div class="section-heading">
+                    <div>
+                        <p class="eyebrow">Goals</p>
+                        <h2>Savings</h2>
+                        <p>Create goals, contribute money and track your progress.</p>
+                    </div>
+                    <button class="primary-button" id="addGoalButton" type="button"><span>+</span> New goal</button>
+                </div>
+
+                <div class="cards-grid" id="savingsCards"></div>
+            </section>
+
+            <section class="page-section" id="page-settings" data-page-section="settings">
+                <div class="section-heading">
+                    <div>
+                        <p class="eyebrow">Preferences</p>
+                        <h2>Settings</h2>
+                        <p>Personalize your dashboard and manage your local data.</p>
+                    </div>
+                </div>
+
+                <div class="settings-grid">
+                    <article class="panel settings-panel">
+                        <div class="panel-header">
+                            <div><p class="panel-label">Profile</p><h3>Account details</h3></div>
+                        </div>
+
+                        <form id="profileForm" class="settings-form">
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="profileName">Name</label>
+                                    <input id="profileName" name="name" type="text" required>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="profileType">Account label</label>
+                                    <input id="profileType" name="type" type="text" placeholder="Personal Account">
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="profileEmail">Email</label>
+                                <input id="profileEmail" name="email" type="email" placeholder="you@example.com">
+                            </div>
+
+                            <button class="primary-button" type="submit">Save profile</button>
+                        </form>
+                    </article>
+
+                    <article class="panel settings-panel">
+                        <div class="panel-header">
+                            <div><p class="panel-label">Preferences</p><h3>Dashboard settings</h3></div>
+                        </div>
+
+                        <div class="settings-list">
+                            <label class="setting-row">
+                                <span>
+                                    <strong>Currency</strong>
+                                    <small>Used across balances, budgets and transactions.</small>
+                                </span>
+                                <select id="currencySetting" class="select-control">
+                                    <option value="USD">USD — US Dollar</option>
+                                    <option value="NGN">NGN — Nigerian Naira</option>
+                                    <option value="GBP">GBP — British Pound</option>
+                                    <option value="EUR">EUR — Euro</option>
+                                </select>
+                            </label>
+
+                            <label class="setting-row">
+                                <span>
+                                    <strong>Dark mode</strong>
+                                    <small>Switch the dashboard to a darker interface.</small>
+                                </span>
+                                <input type="checkbox" id="themeToggle" class="toggle-input">
+                                <span class="toggle"></span>
+                            </label>
+
+                            <label class="setting-row">
+                                <span>
+                                    <strong>Notifications</strong>
+                                    <small>Show budget and savings alerts.</small>
+                                </span>
+                                <input type="checkbox" id="notificationsToggle" class="toggle-input">
+                                <span class="toggle"></span>
+                            </label>
+                        </div>
+                    </article>
+
+                    <article class="panel settings-panel danger-panel">
+                        <div class="panel-header">
+                            <div><p class="panel-label">Data</p><h3>Backup & reset</h3></div>
+                        </div>
+
+                        <p class="settings-note">Your financial data is stored locally in this browser. Export it before resetting if you want a backup.</p>
+
+                        <div class="button-row">
+                            <button class="secondary-button" id="exportDataButton" type="button">Export data</button>
+                            <button class="danger-button" id="resetDataButton" type="button">Reset dashboard</button>
+                        </div>
+                    </article>
+                </div>
+            </section>
+        </div>
+    </main>
 </div>
 
-
-<div class="main">
-
-<h1>Dashboard Overview</h1>
-
-<div class="cards">
-
-<div class="card">
-<h3>Total Balance</h3>
-<p>$8,420</p>
+<div class="notification-popover" id="notificationPopover" aria-hidden="true">
+    <div class="popover-header">
+        <div><strong>Notifications</strong><span id="notificationCount">0</span></div>
+        <button id="clearNotifications" type="button">Clear</button>
+    </div>
+    <div id="notificationList" class="notification-list"></div>
 </div>
 
-<div class="card">
-<h3>Revenue</h3>
-<p>$3,120</p>
+<div class="profile-popover" id="profilePopover" aria-hidden="true">
+    <div class="profile-popover-head">
+        <div class="user-avatar" id="popoverAvatar">YN</div>
+        <div>
+            <strong id="popoverName">Your Name</strong>
+            <span id="popoverEmail">Personal Account</span>
+        </div>
+    </div>
+
+    <button data-go-page="settings" type="button">⚙ Settings</button>
+    <button id="popoverExport" type="button">↓ Export data</button>
 </div>
 
-<div class="card">
-<h3>Active Users</h3>
-<p>1,240</p>
+<div class="modal setup-modal" id="financialSetupModal" aria-hidden="true">
+    <div class="modal-card">
+        <div class="modal-header">
+            <div>
+                <p class="panel-label">Let's get started</p>
+                <h2>Your real financial starting point</h2>
+                <p class="setup-intro">Nothing is pre-filled with fake money. Enter your current numbers so the dashboard can calculate everything from your own data.</p>
+            </div>
+        </div>
+
+        <form id="financialSetupForm">
+            <div class="form-group">
+                <label for="setupName">Your name <span class="optional">Optional</span></label>
+                <input type="text" id="setupName" name="setupName" placeholder="e.g. Joyce">
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="startingBalance">Current total balance</label>
+                    <input type="number" id="startingBalance" name="startingBalance" min="0" step="0.01" placeholder="0.00" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="startingSavings">Current savings</label>
+                    <input type="number" id="startingSavings" name="startingSavings" min="0" step="0.01" placeholder="0.00" required>
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="monthlyIncome">Typical monthly income</label>
+                    <input type="number" id="monthlyIncome" name="monthlyIncome" min="0" step="0.01" placeholder="0.00">
+                    <span class="form-help">Planning reference only. Actual income is recorded through transactions.</span>
+                </div>
+
+                <div class="form-group">
+                    <label for="incomeFrequency">Income frequency</label>
+                    <select id="incomeFrequency" name="incomeFrequency">
+                        <option value="Monthly">Monthly</option>
+                        <option value="Bi-weekly">Bi-weekly</option>
+                        <option value="Weekly">Weekly</option>
+                        <option value="Irregular">Irregular</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="setupEmail">Email <span class="optional">Optional</span></label>
+                <input type="email" id="setupEmail" name="setupEmail" placeholder="you@example.com">
+            </div>
+
+            <div class="setup-note">
+                <strong>How the numbers work</strong>
+                <span>Your balance starts from what you enter here. Income and expenses come from transactions you add. Budgets and savings goals start empty until you create them.</span>
+            </div>
+
+            <div class="modal-actions">
+                <button class="primary-button" type="submit">Continue to dashboard</button>
+            </div>
+        </form>
+    </div>
 </div>
 
+<div class="modal" id="setupModal" aria-hidden="true">
+    <div class="modal-card setup-modal-card">
+        <div class="modal-header">
+            <div>
+                <p class="panel-label">First-time setup</p>
+                <h2>Start with your real numbers</h2>
+            </div>
+        </div>
+
+        <p class="setup-intro">
+            Nothing is pre-filled with fake financial data. Enter what is true for you right now, and the dashboard will build from it.
+        </p>
+
+        <form id="setupForm">
+
+            <div class="form-group">
+                <label for="setupName">Your name</label>
+                <input
+                    type="text"
+                    id="setupName"
+                    name="name"
+                    placeholder="e.g. Joyce"
+                    required
+                >
+            </div>
+
+            <div class="form-group">
+                <label for="setupEmail">
+                    Email <span class="optional">Optional</span>
+                </label>
+                <input
+                    type="email"
+                    id="setupEmail"
+                    name="email"
+                    placeholder="you@example.com"
+                >
+            </div>
+
+            <div class="form-row">
+
+                <div class="form-group">
+                    <label for="setupCurrency">Currency</label>
+
+                    <select id="setupCurrency" name="currency">
+                        <option value="USD">USD — US Dollar</option>
+                        <option value="NGN">NGN — Nigerian Naira</option>
+                        <option value="GBP">GBP — British Pound</option>
+                        <option value="EUR">EUR — Euro</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="incomeFrequency">Income frequency</label>
+
+                    <select id="incomeFrequency" name="incomeFrequency">
+                        <option>Monthly</option>
+                        <option>Bi-weekly</option>
+                        <option>Weekly</option>
+                        <option>Irregular</option>
+                    </select>
+                </div>
+
+            </div>
+
+            <div class="form-row">
+
+                <div class="form-group">
+                    <label for="startingBalance">
+                        Available balance
+                    </label>
+
+                    <input
+                        type="number"
+                        id="startingBalance"
+                        name="startingBalance"
+                        min="0"
+                        step="0.01"
+                        placeholder="0.00"
+                        required
+                    >
+
+                    <small class="field-help">
+                        Money currently available to spend.
+                    </small>
+                </div>
+
+                <div class="form-group">
+                    <label for="startingSavings">
+                        Current savings
+                    </label>
+
+                    <input
+                        type="number"
+                        id="startingSavings"
+                        name="startingSavings"
+                        min="0"
+                        step="0.01"
+                        placeholder="0.00"
+                        required
+                    >
+
+                    <small class="field-help">
+                        Savings kept separately from your available balance.
+                    </small>
+                </div>
+
+            </div>
+
+            <div class="setup-note">
+                <strong>You can change everything later.</strong>
+
+                <span>
+                    Your income and expenses will come from the transactions you add,
+                    while budgets and savings goals are created by you.
+                </span>
+            </div>
+
+            <div class="modal-actions">
+                <button class="primary-button" type="submit">
+                    Continue to dashboard
+                </button>
+            </div>
+
+        </form>
+    </div>
 </div>
 
+<div class="modal" id="transactionModal" aria-hidden="true">
+    <div class="modal-card">
+        <div class="modal-header">
+            <div>
+                <p class="panel-label">Finance</p>
+                <h2 id="transactionModalTitle">Add transaction</h2>
+            </div>
+            <button class="modal-close" data-close-modal="transactionModal" type="button">×</button>
+        </div>
 
-<h2 class="table-title">Recent Transactions</h2>
+        <form id="transactionForm">
+            <input type="hidden" id="transactionId" name="id">
 
-<table>
+            <div class="form-group">
+                <label for="transactionName">Transaction name</label>
+                <input type="text" id="transactionName" name="name" placeholder="e.g. Grocery Market" required>
+            </div>
 
-<tr>
-<th>Name</th>
-<th>Amount</th>
-<th>Status</th>
-</tr>
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="transactionType">Type</label>
+                    <select id="transactionType" name="type" required>
+                        <option value="expense">Expense</option>
+                        <option value="income">Income</option>
+                    </select>
+                </div>
 
-<tr>
-<td>John Doe</td>
-<td>$120</td>
-<td class="success">Completed</td>
-</tr>
+                <div class="form-group">
+                    <label for="transactionAmount">Amount</label>
+                    <input type="number" id="transactionAmount" name="amount" min="0.01" step="0.01" placeholder="0.00" required>
+                </div>
+            </div>
 
-<tr>
-<td>Sarah Lee</td>
-<td>$75</td>
-<td class="pending">Pending</td>
-</tr>
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="transactionCategory">Category</label>
+                    <select id="transactionCategory" name="category" required>
+                        <option value="Food">Food</option>
+                        <option value="Transport">Transport</option>
+                        <option value="Entertainment">Entertainment</option>
+                        <option value="Shopping">Shopping</option>
+                        <option value="Bills">Bills</option>
+                        <option value="Housing">Housing</option>
+                        <option value="Health">Health</option>
+                        <option value="Education">Education</option>
+                        <option value="Income">Income</option>
+                        <option value="Other">Other</option>
+                    </select>
+                </div>
 
-<tr>
-<td>David Kim</td>
-<td>$300</td>
-<td class="success">Completed</td>
-</tr>
+                <div class="form-group">
+                    <label for="transactionDate">Date</label>
+                    <input type="date" id="transactionDate" name="date" required>
+                </div>
+            </div>
 
-</table>
+            <div class="form-group">
+                <label for="transactionDescription">Description <span class="optional">Optional</span></label>
+                <input type="text" id="transactionDescription" name="description" placeholder="Add a note">
+            </div>
 
-
+            <div class="modal-actions">
+                <button class="secondary-button" data-close-modal="transactionModal" type="button">Cancel</button>
+                <button class="primary-button" type="submit" id="transactionSubmit">Add transaction</button>
+            </div>
+        </form>
+    </div>
 </div>
 
+<div class="modal" id="budgetModal" aria-hidden="true">
+    <div class="modal-card">
+        <div class="modal-header">
+            <div>
+                <p class="panel-label">Planning</p>
+                <h2 id="budgetModalTitle">New budget</h2>
+            </div>
+            <button class="modal-close" data-close-modal="budgetModal" type="button">×</button>
+        </div>
+
+        <form id="budgetForm">
+            <input type="hidden" id="budgetId" name="id">
+
+            <div class="form-group">
+                <label for="budgetCategory">Category</label>
+                <select id="budgetCategory" name="category" required>
+                    <option>Food</option>
+                    <option>Transport</option>
+                    <option>Entertainment</option>
+                    <option>Shopping</option>
+                    <option>Bills</option>
+                    <option>Housing</option>
+                    <option>Health</option>
+                    <option>Education</option>
+                    <option>Other</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="budgetAmount">Monthly limit</label>
+                <input type="number" id="budgetAmount" name="amount" min="1" step="0.01" required>
+            </div>
+
+            <div class="modal-actions">
+                <button class="secondary-button" data-close-modal="budgetModal" type="button">Cancel</button>
+                <button class="primary-button" type="submit">Save budget</button>
+            </div>
+        </form>
+    </div>
 </div>
 
+<div class="modal" id="goalModal" aria-hidden="true">
+    <div class="modal-card">
+        <div class="modal-header">
+            <div>
+                <p class="panel-label">Savings</p>
+                <h2 id="goalModalTitle">New savings goal</h2>
+            </div>
+            <button class="modal-close" data-close-modal="goalModal" type="button">×</button>
+        </div>
+
+        <form id="goalForm">
+            <input type="hidden" id="goalId" name="id">
+
+            <div class="form-group">
+                <label for="goalName">Goal name</label>
+                <input type="text" id="goalName" name="name" placeholder="e.g. Emergency fund" required>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="goalTarget">Target amount</label>
+                    <input type="number" id="goalTarget" name="target" min="1" step="0.01" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="goalCurrent">Already saved</label>
+                    <input type="number" id="goalCurrent" name="current" min="0" step="0.01" value="0">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="goalDeadline">Target date <span class="optional">Optional</span></label>
+                <input type="date" id="goalDeadline" name="deadline">
+            </div>
+
+            <div class="modal-actions">
+                <button class="secondary-button" data-close-modal="goalModal" type="button">Cancel</button>
+                <button class="primary-button" type="submit">Save goal</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="modal" id="contributeModal" aria-hidden="true">
+    <div class="modal-card small-modal">
+        <div class="modal-header">
+            <div>
+                <p class="panel-label">Savings goal</p>
+                <h2>Add money</h2>
+            </div>
+            <button class="modal-close" data-close-modal="contributeModal" type="button">×</button>
+        </div>
+
+        <form id="contributeForm">
+            <input type="hidden" id="contributeGoalId">
+
+            <div class="form-group">
+                <label for="contributeAmount">Amount</label>
+                <input type="number" id="contributeAmount" min="0.01" step="0.01" required>
+            </div>
+
+            <div class="modal-actions">
+                <button class="secondary-button" data-close-modal="contributeModal" type="button">Cancel</button>
+                <button class="primary-button" type="submit">Add money</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="toast-container" id="toastContainer"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="app.js"></script>
 </body>
 </html>
